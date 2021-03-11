@@ -4,8 +4,8 @@ from werkzeug.utils import secure_filename
 
 from s3_uploader import uploadPublicFile
 
-UPLOAD_FOLDER = '/Users/reutskiy/DeployerBetaBot/files/'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'ipa', 'zip'}
+UPLOAD_FOLDER = os.environ.get("APP_HOME") + '/tmp'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'ipa', 'zip', 'json'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -28,9 +28,12 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            uploadPublicFile(UPLOAD_FOLDER + filename, "bot_test")
+            filename = file.filename
+            fullpath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            flash("Filename:", fullpath)
+            file.save(fullpath)
+            uploadPublicFile(fullpath, "bot_test")
+            # os.remove(fullpath)
             return redirect(url_for('upload_file',
                                     filename=filename))
     return '''
@@ -45,9 +48,12 @@ def upload_file():
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT"), 5000)
+    print(os.environ.get("PORT"))
+    print(UPLOAD_FOLDER)
+    port = 3000 #int(os.environ.get("PORT"), 5000)
     if not port:
         print("❌Port is not defined")
     else:
         print("✅Port", port)
+        app.debug = True
     app.run(host='0.0.0.0', port = port)
