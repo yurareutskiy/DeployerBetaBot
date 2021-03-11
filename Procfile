@@ -1,1 +1,1 @@
-web: flask run
+web: gunicorn upload_form:app
