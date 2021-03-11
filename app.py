@@ -48,9 +48,7 @@ def upload_file():
 
 
 if __name__ == '__main__':
-    print(os.environ.get("PORT"))
-    print(UPLOAD_FOLDER)
-    port = 3000 #int(os.environ.get("PORT"), 5000)
+    port = int(os.environ.get("PORT"), 5000)
     if not port:
         print("❌Port is not defined")
     else:
