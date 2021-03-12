@@ -1,7 +1,5 @@
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
 access_key = os.getenv("AWS_ACCCESS_KEY")
 secret_key = os.getenv("AWS_SECRET_KEY")
 

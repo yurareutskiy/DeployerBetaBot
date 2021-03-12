@@ -3,8 +3,9 @@ from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from s3_uploader import uploadPublicFile
+from configure import setup
 
-UPLOAD_FOLDER = os.environ.get("APP_HOME") + '/tmp'
+UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER")
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'ipa', 'zip', 'json'}
 
 app = Flask(__name__)
@@ -30,10 +31,9 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = file.filename
             fullpath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            flash("Filename:", fullpath)
             file.save(fullpath)
             uploadPublicFile(fullpath, "bot_test")
-            # os.remove(fullpath)
+            os.remove(fullpath)
             return redirect(url_for('upload_file',
                                     filename=filename))
     return '''
@@ -48,10 +48,11 @@ def upload_file():
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT"), 5000)
+    setup()
+    port = os.environ.get('PORT')
     if not port:
-        print("❌Port is not defined")
+        print("❌ Port is not defined")
     else:
-        print("✅Port", port)
+        print("✅ Port", port)
         app.debug = True
     app.run(host='0.0.0.0', port = port)
